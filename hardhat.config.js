@@ -1,17 +1,11 @@
+const { task } = require("hardhat/config");
 require("@nomiclabs/hardhat-waffle");
 
-// This is a sample Hardhat task. To learn how to create your own go to
-// https://hardhat.org/guides/create-task.html
-task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
-  const accounts = await hre.ethers.getSigners();
-
-  for (const account of accounts) {
-    console.log(account.address);
-  }
-});
-
-// You need to export an object to set up your config
-// Go to https://hardhat.org/config/ to learn more
+task('deploy-apple-router', "Deploys Apple Contracts")
+  .setAction(async (taskArguments, hre, runSuper) => {
+  const deployApple = require("./scripts/deploy-apple");
+  await deployApple();
+})
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
@@ -26,5 +20,13 @@ module.exports = {
         version: "0.8.4",
       },
     ]
-  }
+  },
+    networks: {
+      ropsten: {
+        url: "https://ropsten.infura.io/v3/40c2813049e44ec79cb4d7e0d18de173",
+        accounts: [
+          "8bdb66e10830c94a62f6947b0e7bb69b2fc705805b59b7b1c39028c676d46fe1",
+        ],
+      },
+    }
 };

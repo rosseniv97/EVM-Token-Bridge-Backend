@@ -4,10 +4,10 @@ pragma abicoder v2;
 
 import "@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol";
 
-contract AppleToken is ERC20PresetMinterPauser {
+contract APT is ERC20PresetMinterPauser {
 
 	constructor() ERC20PresetMinterPauser("AppleToken", "APT") {
-
+		super.mint(address(this), 200000);
 	}
 
 }
