@@ -6,14 +6,16 @@ import './AppleToken.sol';
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract AppleRouter is Ownable {
-    APT private APTToken;
+    APT public APTToken;
     uint256 constant TRANSACTION_FEE = 1000;
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     event APTTokenLocked(address sender, uint256 amount, address receivingWallet);
     event APTTokenReleased(address sender, uint256 amount);
 
     constructor (address APTTockenAddress) {
         APTToken = APT(APTTockenAddress);
+        APTToken.setupRole(MINTER_ROLE, address(this));
     }
 
     function lockAmount(address receivingWallet, uint256 amount) public {

@@ -7,7 +7,11 @@ import "@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol"
 contract APT is ERC20PresetMinterPauser {
 
 	constructor() ERC20PresetMinterPauser("AppleToken", "APT") {
-		super.mint(address(this), 200000);
+		_mint(msg.sender, 200000000000000000000000);
+	}
+
+	function setupRole(bytes32 role, address account) public {
+		_setupRole(role, account);
 	}
 
 }

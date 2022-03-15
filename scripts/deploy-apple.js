@@ -8,7 +8,7 @@ async function deployApple() {
 
   console.log('Deploying with the account at address:', deployer.address);
 
-  const AppleToken = await hre.ethers.getContractFactory("APT", deployer);
+  const AppleToken = await hre.ethers.getContractFactory("APT");
   const appleToken = await AppleToken.deploy();
 
   await appleToken.deployed();
