@@ -3,19 +3,21 @@ pragma solidity ^0.8.0;
 pragma abicoder v2;
 
 import './LimeToken.sol';
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 
 contract LimeRouter is Ownable {
-    LMT public LMTToken;
+    LMT private LMTToken;
     uint256 constant TRANSACTION_FEE = 1000;
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    address deployerAddress;
+    bytes32 constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     event LMTTokenLocked(address sender, uint256 amount, address receivingWallet);
     event LMTTokenReleased(address sender, uint256 amount);
 
     constructor (address LMTTockenAddress) {
+        deployerAddress = msg.sender;
         LMTToken = LMT(LMTTockenAddress);
-        LMTToken.setupRole(MINTER_ROLE, address(this));
+        LMTToken.setupRole(MINTER_ROLE, this);
     }
 
     function lockAmount(address receivingWallet, uint256 amount) public {
