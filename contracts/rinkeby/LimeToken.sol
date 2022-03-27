@@ -2,22 +2,31 @@
 pragma solidity ^0.8.0;
 pragma abicoder v2;
 
-import "../../node_modules/@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol";
-import "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./LimeRouter.sol";
 
 contract LMT is ERC20PresetMinterPauser, Ownable {
-	constructor() ERC20PresetMinterPauser("LimeToken", "LMT") {
-		_mint(msg.sender, 200000000000000000000000);
-	}
 
-	modifier onlySharedOwner(LimeRouter routerContract) {
-		require(routerContract.owner() == this.owner(), "The router contract isn't deployed by the owner");
-		_;
-	}
+    constructor() ERC20PresetMinterPauser("LimeToken", "LMT") {
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _mint(msg.sender, 200000000000000000000000);
+    }
 
-	function setupRole(bytes32 role, LimeRouter routerContract) public onlySharedOwner(routerContract) {
-		_setupRole(role, address(routerContract));
-	}
+    modifier onlySharedOwner() {
+        require(
+            msg.sender == this.owner(),
+            "The router contract isn't deployed by the owner"
+        );
+        _;
+    }
 
+    function setupRouterRoles(
+        bytes32[] memory roles,
+        address routerAddress
+    ) public onlySharedOwner {
+        for (uint8 i = 0; i < roles.length; i++) {
+            grantRole(roles[i], routerAddress);
+        }
+    }
 }
