@@ -9,7 +9,6 @@ import "./LimeRouter.sol";
 contract LMT is ERC20PresetMinterPauser, Ownable {
 
     constructor() ERC20PresetMinterPauser("LimeToken", "LMT") {
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _mint(msg.sender, 200000000000000000000000);
     }
 

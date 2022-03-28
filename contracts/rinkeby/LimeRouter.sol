@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract LimeRouter is Ownable {
     LMT private LMTToken;
-    uint256 constant TRANSACTION_FEE = 1000;
+    uint256 constant TRANSACTION_FEE = 10000000000000000;
 
     event LMTTokenLocked(
         address sender,
@@ -24,7 +24,7 @@ contract LimeRouter is Ownable {
         return LMTToken;
     }
 
-    function lockAmount(address receivingWallet, uint256 amount) public {
+    function lockAmount(address receivingWallet, uint256 amount) public returns(uint256) {
         require(amount > 0, "At least 1 LMT needs to be locked");
         LMTToken.transferFrom(msg.sender, address(this), amount);
         emit LMTTokenLocked(
@@ -32,6 +32,7 @@ contract LimeRouter is Ownable {
             amount - TRANSACTION_FEE,
             receivingWallet
         );
+        return amount - TRANSACTION_FEE;
     }
 
     function releaseAmount(uint256 amount) public {
