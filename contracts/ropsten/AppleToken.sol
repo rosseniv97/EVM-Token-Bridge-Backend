@@ -3,15 +3,17 @@ pragma solidity ^0.8.0;
 pragma abicoder v2;
 
 import "@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract APT is ERC20PresetMinterPauser {
+contract APT is ERC20PresetMinterPauser, Ownable {
 
-	constructor() ERC20PresetMinterPauser("AppleToken", "APT") {
+	constructor(address routerContractAddress) ERC20PresetMinterPauser("AppleToken", "APT") {
+		 _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+		 _setupRole(MINTER_ROLE, routerContractAddress);
 		_mint(msg.sender, 200000000000000000000000);
 	}
 
-	function setupRole(bytes32 role, address account) public {
-		_setupRole(role, account);
+	function setupRole( bytes32 role, address account) public onlyOwner {
+			grantRole(role, account);
 	}
-
 }
