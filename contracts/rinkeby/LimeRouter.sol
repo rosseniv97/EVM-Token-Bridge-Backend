@@ -6,8 +6,8 @@ import "./LimeToken.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract LimeRouter is Ownable {
-    LMT private LMTToken;
-    uint256 constant TRANSACTION_FEE = 10000000000000000;
+    LMT public LMTToken;
+    uint256 public transactionFee;
 
     event LMTTokenLocked(
         address sender,
@@ -16,32 +16,31 @@ contract LimeRouter is Ownable {
     );
     event LMTTokenReleased(address sender, uint256 amount);
 
-    constructor(address LMTTokenAddress) {
+    constructor(uint256 feePerTransaction) {
+        transactionFee = feePerTransaction;
+    }
+
+    function setLMTTokenInstance(address LMTTokenAddress) public onlyOwner {
         LMTToken = LMT(LMTTokenAddress);
     }
 
-    function getLMTToken() public view onlyOwner returns (LMT) {
-        return LMTToken;
-    }
-
-    function lockAmount(address receivingWallet, uint256 amount) public returns(uint256) {
+    function lockAmount(address receivingWallet, uint256 amount) public {
         require(amount > 0, "At least 1 LMT needs to be locked");
         LMTToken.transferFrom(msg.sender, address(this), amount);
         emit LMTTokenLocked(
             msg.sender,
-            amount - TRANSACTION_FEE,
+            amount - transactionFee,
             receivingWallet
         );
-        return amount - TRANSACTION_FEE;
     }
 
-    function releaseAmount(uint256 amount) public {
+    function releaseAmount(uint256 amount, address receivingWallet) public {
         require(amount > 0, "At least 1 LMT needs to be released");
         if (LMTToken.balanceOf(address(this)) <= amount) {
-            LMTToken.mint(msg.sender, amount);
+            LMTToken.mint(receivingWallet, amount);
         } else {
-            LMTToken.transferFrom(address(this), msg.sender, amount);
+            LMTToken.transferFrom(address(this), receivingWallet, amount);
         }
-        emit LMTTokenReleased(msg.sender, amount);
+        emit LMTTokenReleased(receivingWallet, amount);
     }
 }

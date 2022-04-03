@@ -1,5 +1,5 @@
 const hre = require("hardhat");
-const { formatBytes32String, keccak256} = require("ethers/lib/utils");
+const { formatBytes32String, keccak256, parseEther} = require("ethers/lib/utils");
 
 async function deployApple() {
   await hre.run('compile');
@@ -13,7 +13,7 @@ async function deployApple() {
 
   
   const appleRouter = await hre.ethers.getContractFactory("AppleRouter");
-  const AppleRouter = await appleRouter.deploy()
+  const AppleRouter = await appleRouter.deploy(parseEther('0.01'))
 
   await AppleRouter.deployed();
   console.log("AppleRouter deployed to:", AppleRouter.address);

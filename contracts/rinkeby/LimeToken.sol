@@ -8,24 +8,9 @@ import "./LimeRouter.sol";
 
 contract LMT is ERC20PresetMinterPauser, Ownable {
 
-    constructor() ERC20PresetMinterPauser("LimeToken", "LMT") {
-        _mint(msg.sender, 200000000000000000000000);
-    }
-
-    modifier onlySharedOwner() {
-        require(
-            msg.sender == this.owner(),
-            "The router contract isn't deployed by the owner"
-        );
-        _;
-    }
-
-    function setupRouterRoles(
-        bytes32[] memory roles,
-        address routerAddress
-    ) public onlySharedOwner {
-        for (uint8 i = 0; i < roles.length; i++) {
-            grantRole(roles[i], routerAddress);
-        }
+    constructor(address routerContractAddress) ERC20PresetMinterPauser("LimeToken", "LMT") {
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+		 _setupRole(MINTER_ROLE, routerContractAddress);
+		_mint(msg.sender, 200000000000000000000000);
     }
 }

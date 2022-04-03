@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract AppleRouter is Ownable {
     APT public APTToken;
-    uint256 constant TRANSACTION_FEE = 1000;
+    uint256 public transactionFee;
 
     event APTTokenLocked(
         address sender,
@@ -16,14 +16,16 @@ contract AppleRouter is Ownable {
     );
     event APTTokenReleased(address sender, uint256 amount);
 
-    constructor() {}
+    constructor(uint256 feePerTransaction) {
+        transactionFee = feePerTransaction;
+    }
 
     function lockAmount(address receivingWallet, uint256 amount) public {
         require(amount > 0, "At least 1 APT needs to be locked");
         APTToken.transferFrom(msg.sender, address(this), amount);
         emit APTTokenLocked(
             msg.sender,
-            amount - TRANSACTION_FEE,
+            amount - transactionFee,
             receivingWallet
         );
     }
@@ -32,13 +34,13 @@ contract AppleRouter is Ownable {
         APTToken = APT(APTTokenAddress);
     }
 
-    function releaseAmount(uint256 amount) public {
+    function releaseAmount(uint256 amount, address receivingWallet) public {
         require(amount > 0, "At least 1 APT needs to be released");
         if (APTToken.balanceOf(address(this)) <= amount) {
-            APTToken.mint(msg.sender, amount);
+            APTToken.mint(receivingWallet, amount);
         } else {
-            APTToken.transferFrom(address(this), msg.sender, amount);
+            APTToken.transferFrom(address(this), receivingWallet, amount);
         }
-        emit APTTokenReleased(msg.sender, amount);
+        emit APTTokenReleased(receivingWallet, amount);
     }
 }

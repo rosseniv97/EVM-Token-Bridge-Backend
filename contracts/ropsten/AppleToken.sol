@@ -12,8 +12,4 @@ contract APT is ERC20PresetMinterPauser, Ownable {
 		 _setupRole(MINTER_ROLE, routerContractAddress);
 		_mint(msg.sender, 200000000000000000000000);
 	}
-
-	function setupRole( bytes32 role, address account) public onlyOwner {
-			grantRole(role, account);
-	}
 }
