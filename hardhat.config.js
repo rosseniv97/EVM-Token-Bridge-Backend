@@ -31,13 +31,13 @@ module.exports = {
       ropsten: {
         url: "https://ropsten.infura.io/v3/40c2813049e44ec79cb4d7e0d18de173",
         accounts: [
-          "8bdb66e10830c94a62f6947b0e7bb69b2fc705805b59b7b1c39028c676d46fe1",
+          "efbe4b1c26a84654c152b53fed94f51e1f2b63c868c683546cad4bc8c086ce31",
         ],
       },
       rinkeby: {
         url: "https://rinkeby.infura.io/v3/40c2813049e44ec79cb4d7e0d18de173",
         accounts: [
-          "8bdb66e10830c94a62f6947b0e7bb69b2fc705805b59b7b1c39028c676d46fe1",
+          "efbe4b1c26a84654c152b53fed94f51e1f2b63c868c683546cad4bc8c086ce31",
         ],
       },
     }

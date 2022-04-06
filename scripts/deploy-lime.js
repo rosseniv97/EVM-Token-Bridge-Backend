@@ -4,7 +4,7 @@ const hre = require("hardhat");
 async function deployLime() {
   await hre.run('compile');
 
-  const [,deployerLime] = await hre.ethers.getSigners(); // We are getting the deployer
+  const [deployerLime] = await hre.ethers.getSigners(); // We are getting the deployer
 
   console.log('Deploying with the account at address:', deployerLime.address);
 

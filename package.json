@@ -4,7 +4,7 @@
   "description": "Token Bridge Backend",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "mocha test"
   },
   "repository": {
     "type": "git",

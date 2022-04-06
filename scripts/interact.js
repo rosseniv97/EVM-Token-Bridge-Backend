@@ -22,14 +22,14 @@ const run = async function () {
   const walletApplePrivateKey =
     "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
   const walletLimePrivateKey =
-    "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d";
+    "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
   const providerApple = new ethers.providers.JsonRpcProvider(providerURL);
   const walletApple = new ethers.Wallet(walletApplePrivateKey, providerApple);
   const providerLime = new ethers.providers.JsonRpcProvider(providerURL);
   const walletLime = new ethers.Wallet(walletLimePrivateKey, providerLime);
 
-  const appleRouterAddress = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
-  const appleTokenAddress = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
+  const appleRouterAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+  const appleTokenAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
   const appleRouterContract = new hre.ethers.Contract(
     appleRouterAddress,
     appleRouter.abi,
@@ -41,8 +41,8 @@ const run = async function () {
     walletApple
   );
 
-  const limeRouterAddress = "0x05Aa229Aec102f78CE0E852A812a388F076Aa555";
-  const limeTokenAddress = "0x0b48aF34f4c854F5ae1A3D587da471FeA45bAD52";
+  const limeRouterAddress = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
+  const limeTokenAddress = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
   const limeRouterContract = new hre.ethers.Contract(
     limeRouterAddress,
     limeRouter.abi,
@@ -55,16 +55,12 @@ const run = async function () {
   );
 
   const approveBlockTx = await limeTokenContract.approve(
-    appleRouterAddress,
+    limeRouterAddress,
     parseEther("1000")
   );
   await approveBlockTx.wait();
   console.log(
     formatEther(await limeTokenContract.balanceOf(walletLime.address))
-  );
-  const approveReleaseTx = await limeTokenContract.approve(
-    limeRouterAddress,
-    parseEther("1000")
   );
   const lockTx = await limeRouterContract.lockAmount(
     walletApple.address,
@@ -86,15 +82,15 @@ const run = async function () {
       );
       await approveReleaseTx.wait();
       console.log(
-        formatEther(await appleTokenContract.balanceOf(appleRouterContract.address))
+        formatEther(await appleTokenContract.balanceOf(walletApple.address))
       );
       const releaseTx = await appleRouterContract.releaseAmount(
-        parseEther(amount.toString()),
+        amount,
         receivingAddress
       );
       await releaseTx.wait();
       let balance = formatEther(await appleTokenContract.balanceOf(walletApple.address));
-      console.log("Balance Apple:", balance.toString());
+      console.log("Balance Apple:", balance);
       contractAPTBalance = formatEther(await appleTokenContract.balanceOf(
         appleRouterAddress
       ));
