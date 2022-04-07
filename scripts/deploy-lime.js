@@ -24,3 +24,18 @@ async function deployLime() {
 }
 
 module.exports = deployLime;
+
+
+//Wrapper token on the router on both chains
+
+// wAPT, wLMT
+
+// mapping NativeToken address -> wrappedToken address
+
+//if doesn't exist -> create wrapped token
+
+// WrappedToken wt = WrappedToken(wrappedTokenAddress);
+
+mapping(address => mapping(address => uint256))
+
+// mint wToken when claimed
