@@ -7,9 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract APT is ERC20PresetMinterPauser, Ownable {
 
-	constructor(address routerContractAddress) ERC20PresetMinterPauser("AppleToken", "APT") {
-		 _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-		 _setupRole(MINTER_ROLE, routerContractAddress);
+	constructor() ERC20PresetMinterPauser("AppleToken", "APT") {
 		_mint(msg.sender, 200000000000000000000000);
 	}
 }
