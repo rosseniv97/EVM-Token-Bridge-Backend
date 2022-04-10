@@ -14,7 +14,11 @@ contract Router is Ownable {
     mapping(address => address) public nativeToWrapped;
     mapping(address => mapping(address => uint256)) public userToLocked;
 
-    event TokenLocked(address sender, uint256 amount, address tokenContractAddress);
+    event TokenLocked(
+        address sender,
+        uint256 amount,
+        address tokenContractAddress
+    );
 
     event TokenClaimed(
         address receiverAddress,

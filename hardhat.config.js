@@ -1,10 +1,16 @@
 const { task } = require("hardhat/config");
 require("@nomiclabs/hardhat-waffle");
 
-task('deploy', "Deploys All Contracts")
+task('deploy-apple', "Deploys Apple contracts")
   .setAction(async (taskArguments, hre, runSuper) => {
-  const deployApple = require("./scripts/deploy");
+  const deployApple = require("./scripts/deploy-ropsten");
   await deployApple();
+})
+
+task('deploy-lime', "Deploys Lim contracts")
+  .setAction(async (taskArguments, hre, runSuper) => {
+  const deployLime = require("./scripts/deploy-rinkeby");
+  await deployLime();
 })
 
 /**

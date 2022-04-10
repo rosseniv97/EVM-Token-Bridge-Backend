@@ -95,28 +95,7 @@ describe("Router interactions", function () {
     );
     await claimTx.wait();
   });
-  xit("Should be able to release certain amount", async function () {
+  xit("Should be able to burn certain amount", async function () {
     const amountReleased = "1000";
-
-    console.log(
-      await tokenContract.hasRole(MINTER_ROLE, routerContract.address)
-    );
-
-    const beforeReleaseBalance = formatEther(
-      await tokenContract.balanceOf(receiverAddress)
-    );
-
-    const releaseAmountTx = await routerContract.releaseAmount(
-      parseEther(amountReleased),
-      receiverAddress
-    );
-    await releaseAmountTx.wait();
-
-    const afterReleaseBalance = formatEther(
-      await tokenContract.balanceOf(receiverAddress)
-    );
-    expect((afterReleaseBalance - beforeReleaseBalance).toString()).to.be.equal(
-      amountReleased
-    );
   });
 });
