@@ -11,10 +11,10 @@ contract Router is Ownable {
     // Generic ERC20
     ERC20 public nativeToken;
     ERC20PresetMinterPauser wrappedTokenInstance;
-    uint256 public transactionFee;
     mapping(address => address) public nativeToWrapped;
+    mapping(address => mapping(address => uint256)) public userToLocked;
 
-    event TokenLocked(address sender, uint256 amount, address receivingAddress);
+    event TokenLocked(address sender, uint256 amount, address tokenContractAddress);
 
     event TokenClaimed(
         address receiverAddress,
@@ -33,15 +33,13 @@ contract Router is Ownable {
         uint256 amount
     );
 
-    constructor(uint256 feePerTransaction) {
-        transactionFee = feePerTransaction;
-    }
-
     // tokenContract.approve(routerAddress, amount) from the FE
-    function lockAmount(address tokenContractAddress, uint256 amount) public {
+    function lock(address tokenContractAddress, uint256 amount) public {
         require(amount > 0, "At least 1 nativeToken needs to be locked");
         nativeToken = ERC20(tokenContractAddress);
         nativeToken.transferFrom(msg.sender, address(this), amount);
+        uint256 currentAmount = userToLocked[msg.sender][tokenContractAddress];
+        userToLocked[msg.sender][tokenContractAddress] = currentAmount + amount;
         emit TokenLocked(msg.sender, amount, tokenContractAddress);
     }
 
@@ -95,6 +93,8 @@ contract Router is Ownable {
         require(amount > 0, "At least 1 APT needs to be released");
         nativeToken = ERC20(nativeTokenAddress);
         nativeToken.transferFrom(address(this), receiverAddress, amount);
+        uint256 currentAmount = userToLocked[msg.sender][nativeTokenAddress];
+        userToLocked[msg.sender][nativeTokenAddress] = currentAmount - amount;
         emit TokenReleased(receiverAddress, nativeTokenAddress, amount);
     }
 }

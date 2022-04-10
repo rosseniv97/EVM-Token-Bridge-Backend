@@ -19,17 +19,13 @@ const run = async function () {
   // const wallet = new hre.ethers.Wallet(walletPrivateKey, provider);
 
   const providerURL = "http://localhost:8545";
-  const walletApplePrivateKey =
+  const walletPrivateKey =
     "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
-  const walletLimePrivateKey =
-    "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
-  const providerApple = new ethers.providers.JsonRpcProvider(providerURL);
-  const walletApple = new ethers.Wallet(walletApplePrivateKey, providerApple);
-  const providerLime = new ethers.providers.JsonRpcProvider(providerURL);
-  const walletLime = new ethers.Wallet(walletLimePrivateKey, providerLime);
+  const provider = new ethers.providers.JsonRpcProvider(providerURL);
+  const wallet = new ethers.Wallet(walletPrivateKey, provider);
 
-  const appleRouterAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-  const appleTokenAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+  const appleRouterAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+  const appleTokenAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
   const appleRouterContract = new hre.ethers.Contract(
     appleRouterAddress,
     appleRouter.abi,
@@ -42,7 +38,7 @@ const run = async function () {
   );
 
   const limeRouterAddress = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
-  const limeTokenAddress = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
+  const limeTokenAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
   const limeRouterContract = new hre.ethers.Contract(
     limeRouterAddress,
     limeRouter.abi,

@@ -9,26 +9,26 @@ describe("LMTToken", function () {
   const MINTER_ROLE = keccak256(formatBytes32String("MINTER_ROLE"));
 
   before(async ()=> {
-    [deployer, address1] = await ethers.getSigners()
+    // [deployer, address1] = await ethers.getSigners()
 
-    let routerFactory = await ethers.getContractFactory("LimeRouter");
-    routerContract = await routerFactory.deploy(parseEther('0.01'));
+    // let routerFactory = await ethers.getContractFactory("LimeRouter");
+    // routerContract = await routerFactory.deploy(parseEther('0.01'));
 
-    await routerContract.deployed();
+    // await routerContract.deployed();
 
-    let tokenFactory = await ethers.getContractFactory("LMT");
-    tokenContract = await tokenFactory.deploy(routerContract.address);
+    // let tokenFactory = await ethers.getContractFactory("LMT");
+    // tokenContract = await tokenFactory.deploy(routerContract.address);
 
-    await tokenContract.deployed();
+    // await tokenContract.deployed();
 
   })
-  it("Should mint 200 000 LMT on deployment", async function () {
+  xit("Should mint 200 000 LMT on deployment", async function () {
     expect(ethers.utils.formatEther( await tokenContract.totalSupply())).to.be.equal('200000.0')
   });
-  it("Should assign the initially minted 200 000 LMT to the deployer", async function () {
+ xit("Should assign the initially minted 200 000 LMT to the deployer", async function () {
     expect(ethers.utils.formatEther( await tokenContract.balanceOf(deployer.address))).to.be.equal('200000.0')
   });
-  it("Should have given MINTER_ROLE to the router contract", async function () {
+  xit("Should have given MINTER_ROLE to the router contract", async function () {
     expect(await tokenContract.hasRole(MINTER_ROLE, routerContract.address)).to.be.equal(true)
   });
 });
