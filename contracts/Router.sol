@@ -5,6 +5,7 @@ pragma abicoder v2;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol";
+import "./WrappedToken.sol";
 
 //Generic router
 contract Router is Ownable {
@@ -37,6 +38,10 @@ contract Router is Ownable {
         uint256 amount
     );
 
+    constructor() {
+
+    }
+
     // tokenContract.approve(routerAddress, amount) from the FE
     function lock(address tokenContractAddress, uint256 amount) public {
         require(amount > 0, "At least 1 nativeToken needs to be locked");
@@ -56,19 +61,16 @@ contract Router is Ownable {
         address wrappedTokenAddress = nativeToWrapped[tokenContractAddress];
 
         if (wrappedTokenAddress != address(0)) {
-            wrappedTokenInstance = ERC20PresetMinterPauser(wrappedTokenAddress);
+            wrappedTokenInstance = WrappedToken(wrappedTokenAddress);
         } else {
-            wrappedTokenInstance = new ERC20PresetMinterPauser(
-                "wrappedToken",
-                "wT"
-            );
+            wrappedTokenInstance = new WrappedToken();
             nativeToWrapped[tokenContractAddress] = address(
                 wrappedTokenInstance
             );
         }
         wrappedTokenInstance.mint(receiverAddress, amount);
 
-        emit TokenClaimed(receiverAddress, amount, wrappedTokenAddress);
+        emit TokenClaimed(receiverAddress, amount, address(wrappedTokenInstance));
     }
 
     // wrappedTokenContract.approve(routerAddress, amount) from the FE
