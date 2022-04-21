@@ -11,7 +11,7 @@ import "./WrappedToken.sol";
 contract Router is Ownable {
     // Generic ERC20
     ERC20 public nativeToken;
-    ERC20PresetMinterPauser wrappedTokenInstance;
+    WrappedToken wrappedTokenInstance;
     mapping(address => address) public nativeToWrapped;
     mapping(address => mapping(address => uint256)) public userToLocked;
 
@@ -83,7 +83,7 @@ contract Router is Ownable {
             nativeToWrapped[nativeTokenAddress] == wrappedTokenAddress,
             "The bridge hasn't minted this wrapped nativeToken"
         );
-        wrappedTokenInstance = ERC20PresetMinterPauser(wrappedTokenAddress);
+        wrappedTokenInstance = WrappedToken(wrappedTokenAddress);
         wrappedTokenInstance.transferFrom(msg.sender, address(this), amount);
         wrappedTokenInstance.burn(amount);
 
@@ -98,7 +98,7 @@ contract Router is Ownable {
     ) public {
         require(amount > 0, "At least 1 APT needs to be released");
         nativeToken = ERC20(nativeTokenAddress);
-        nativeToken.transferFrom(address(this), receiverAddress, amount);
+        nativeToken.transfer(receiverAddress, amount);
         uint256 currentAmount = userToLocked[msg.sender][nativeTokenAddress];
         userToLocked[msg.sender][nativeTokenAddress] = currentAmount - amount;
         emit TokenReleased(receiverAddress, nativeTokenAddress, amount);
