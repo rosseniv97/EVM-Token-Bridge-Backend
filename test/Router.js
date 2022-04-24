@@ -8,6 +8,7 @@ describe("Router interactions", function () {
   let APTRouter;
   let LMTToken;
   let LMTRouter;
+  let wrappedToken;
   const receiverAddress = "0x70997970c51812dc3a010c7d01b50e0d17dc79c8";
   let deployer;
 
@@ -40,23 +41,20 @@ describe("Router interactions", function () {
     await LMTRouter.deployed();
     console.log("Lime Router deployed to:", LMTRouter.address);
   });
-  xit("Should be able to lock Token amount", async function () {
+
+  it("Should be able to lock Token amount", async function () {
     const amountLocked = "1000";
 
-    const approveTx = await LMTToken.approve(LMTRouter.address, amountLocked);
-    // console.log(await LMTToken.allowance(deployer.address, LMTRouter.address))
+    const approveTx = await LMTToken.approve(
+      LMTRouter.address,
+      parseEther(amountLocked)
+    );
+    await approveTx.wait();
+
     const beforeLockBalance = formatEther(
       await LMTToken.balanceOf(deployer.address)
     );
-    LMTRouter.on(
-      "TokenLocked",
-      async (sender, amount, tokenContractAddress) => {
-        const userBalance = await LMTRouter.userToLocked(sender, tokenContractAddress);
-        expect(amount).to.be.equal(amountLocked);
-        expect(userBalance).to.be.equal(amountLocked);
-        expect(LMTToken.address).to.be.equal(tokenContractAddress);
-      }
-    );
+
     const lockAmountTx = await LMTRouter.lock(
       LMTToken.address,
       parseEther(amountLocked)
@@ -66,28 +64,70 @@ describe("Router interactions", function () {
     const afterLockBalance = formatEther(
       await LMTToken.balanceOf(deployer.address)
     );
-    expect((beforeLockBalance - afterLockBalance).toString()).to.be.equal(
-      amountLocked
+    expect(beforeLockBalance - afterLockBalance).to.be.equal(
+      parseFloat(amountLocked)
+    );
+  });
+
+  it("Should be able to release Token amount", async function () {
+    const amountReleased = "1000";
+
+    const beforeReleaseBalance = formatEther(
+      await LMTToken.balanceOf(deployer.address)
+    );
+
+    const releaseAmountTx = await LMTRouter.release(
+      LMTToken.address,
+      deployer.address,
+      parseEther(amountReleased)
+    );
+    await releaseAmountTx.wait();
+
+    const afterReleaseBalance = formatEther(
+      await LMTToken.balanceOf(deployer.address)
+    );
+    expect(afterReleaseBalance - beforeReleaseBalance).to.be.equal(
+      parseFloat(amountReleased)
     );
   });
 
   it("Should be able to claim wrapped tokens on the target network", async function () {
     const amountLocked = "1000";
+    let beforeWrappedBalance;
+    const wrappedTokenAddress = await APTRouter.nativeToWrapped(
+      LMTToken.address
+    );
+
+    const wrappedTokenContract = parseInt(wrappedTokenAddress, 16)
+      ? new ethers.Contract(
+          wrappedTokenAddress,
+          ERC20PresetMinterPauser.abi,
+          deployer
+        )
+      : null;
+    beforeWrappedBalance = wrappedTokenContract
+      ? formatEther(await wrappedTokenContract.balanceOf(deployer.address))
+      : 0;
+
     APTRouter.on(
       "TokenClaimed",
       async (receiverAddress, amount, wrappedTokenAddress) => {
-        const wrappedToken = new ethers.Contract(
+        wrappedToken = new ethers.Contract(
           wrappedTokenAddress,
           ERC20PresetMinterPauser.abi,
           deployer
         );
-        const receiverWTBalance = await wrappedToken.balanceOf(
-          receiverAddress.address
-        );
-        console.log(receiverWTBalance);
-        expect(receiverWTBalance).to.be.equal(amount);
+        if (wrappedToken) {
+          const afterWTBalance = formatEther(
+            await wrappedToken.balanceOf(deployer.address)
+          );
+          expect(afterWTBalance - beforeWrappedBalance).to.be.equal(
+            amountLocked
+          );
+        }
       }
     );
+
     const claimTx = await APTRouter.claim(
       deployer.address,
       LMTToken.address,
@@ -95,7 +135,47 @@ describe("Router interactions", function () {
     );
     await claimTx.wait();
   });
-  xit("Should be able to burn certain amount", async function () {
-    const amountReleased = "1000";
+
+  it("Should be able to burn certain amount", async function () {
+    const amountBurned = "1000";
+    const wrappedTokenAddress = await APTRouter.nativeToWrapped(
+      LMTToken.address
+    );
+
+    const wrappedTokenContract = parseInt(wrappedTokenAddress, 16)
+      ? new ethers.Contract(
+          wrappedTokenAddress,
+          ERC20PresetMinterPauser.abi,
+          deployer
+        )
+      : null;
+    beforeWrappedBalance = wrappedTokenContract
+      ? formatEther(await wrappedTokenContract.balanceOf(deployer.address))
+      : 0;
+    const approveTx = await wrappedTokenContract.approve(
+      APTRouter.address,
+      parseEther(amountBurned)
+    );
+    await approveTx.wait();
+    APTRouter.on("TokenBurned", async (sender, amount, wrappedTokenAddress) => {
+      wrappedToken = new ethers.Contract(
+        wrappedTokenAddress,
+        ERC20PresetMinterPauser.abi,
+        sender
+      );
+      if (wrappedToken) {
+        const afterWTBalance = formatEther(
+          await wrappedToken.balanceOf(deployer.address)
+        );
+        expect(afterWTBalance - beforeWrappedBalance).to.be.equal(amountBurned);
+      }
+    });
+
+    const burnTx = await APTRouter.burn(
+      wrappedTokenAddress,
+      LMTToken.address,
+      parseEther(amountBurned)
+    );
+    await burnTx.wait();
   });
 });
